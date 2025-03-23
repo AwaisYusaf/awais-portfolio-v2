@@ -15,6 +15,7 @@ import { Mailchimp } from "@/components";
 import { Posts } from "@/components/blog/Posts";
 import { getTranslations, unstable_setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
+import TagManagerTest from "./gallery/_components/TagManagerTest";
 
 export async function generateMetadata({
   params: { locale },
@@ -135,6 +136,8 @@ export default function Home({
           <Posts range={[1, 2]} columns="2" locale={locale} />
         </Flex>
       )}
+
+      <TagManagerTest/>
       <Projects range={[2]} locale={locale} />
       {newsletter.display && <Mailchimp newsletter={newsletter} />}
     </Flex>

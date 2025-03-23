@@ -1,5 +1,5 @@
 import { getPosts } from '@/app/utils';
-import { Flex } from '@/once-ui/components';
+import { Button, Flex } from '@/once-ui/components';
 import { Projects } from '@/components/work/Projects';
 import { baseURL, renderContent } from '@/app/resources';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
@@ -48,6 +48,8 @@ export default function Work(
 
     const t = useTranslations();
     const { person, work } = renderContent(t);
+
+
 
     return (
         <Flex

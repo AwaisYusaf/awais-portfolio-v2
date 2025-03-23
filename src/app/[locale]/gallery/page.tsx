@@ -3,6 +3,7 @@ import MasonryGrid from "@/components/gallery/MasonryGrid";
 import { baseURL, renderContent } from "@/app/resources";
 import { getTranslations, unstable_setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
+import TagManagerTest from "./_components/TagManagerTest";
 
 export async function generateMetadata(
 	{params: {locale}}: { params: { locale: string }}
@@ -73,7 +74,8 @@ export default function Gallery(
 					}),
 				}}
 			/>
-            <MasonryGrid/>
+            {/* <MasonryGrid/> */}
+			<TagManagerTest/>
         </Flex>
     );
 }
