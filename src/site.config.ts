@@ -5,6 +5,7 @@ export const site = {
   name: "awais/notes",
   domain: "yourdomain.com",
   email: "awais@mantaq.co",
+  phone: "+92 306 5396548", // whatsapp and calls
   bookingUrl: "https://www.mantaq.co/#contact",
   description:
     "awais yusaf, co-founder & cto at mantaq. i build document automation, ai and web systems.",

@@ -10,7 +10,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+const linkClass =
+  "underline decoration-line underline-offset-4 transition-colors hover:decoration-fg";
+
 export default function Home() {
+  const phoneDigits = site.phone.replace(/\D/g, "");
+  const tel = `tel:+${phoneDigits}`;
+  const whatsapp = `https://wa.me/${phoneDigits}`;
+
   return (
     <>
       <JsonLd
@@ -20,6 +27,7 @@ export default function Home() {
           jobTitle: site.person.role,
           url: siteUrl,
           email: site.email,
+          telephone: site.phone,
           image: `${siteUrl}${site.person.avatar}`,
           worksFor: { "@type": "Organization", name: "Mantaq", url: site.mantaq.url },
           sameAs: site.socials.map((social) => social.href),
@@ -38,7 +46,7 @@ export default function Home() {
         </h1>
         <p className="text-muted">{site.hero.sub}</p>
         <div className="flex flex-wrap gap-3 pt-1">
-          <PillLink href={site.bookingUrl}>book a call →</PillLink>
+          <PillLink href={site.bookingUrl}>book a meeting →</PillLink>
           <PillLink href="#work" variant="outline">
             see work
           </PillLink>
@@ -83,22 +91,35 @@ export default function Home() {
         <p className="mb-4 text-[22px] font-medium tracking-[-0.02em]">
           {"got a process that eats your team's week? let's talk."}
         </p>
-        <p className="flex flex-wrap gap-x-6 gap-y-2">
-          <a
-            href={`mailto:${site.email}`}
-            className="underline decoration-line underline-offset-4 transition-colors hover:decoration-fg"
-          >
+        <div className="flex flex-col items-start gap-2">
+          <a href={`mailto:${site.email}`} className={linkClass}>
             {site.email}
           </a>
+          <p>
+            <a href={tel} className={linkClass}>
+              {site.phone}
+            </a>
+            <span className="text-muted">
+              {" ("}
+              <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-fg">
+                whatsapp
+              </a>
+              {" / "}
+              <a href={tel} className="transition-colors hover:text-fg">
+                call
+              </a>
+              {")"}
+            </span>
+          </p>
           <a
             href={site.bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted transition-colors hover:text-fg"
           >
-            or book a call →
+            or book a meeting →
           </a>
-        </p>
+        </div>
       </Section>
     </>
   );
