@@ -32,9 +32,8 @@ export default async function OpengraphImage() {
         <div style={{ fontSize: 64, lineHeight: 1.15, letterSpacing: "-0.03em", maxWidth: 980 }}>
           {site.hero.line}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 28, color: "#8e8e8e" }}>
-          <div style={{ width: 14, height: 14, borderRadius: 7, background: "#22c55e" }} />
-          open for new projects
+        <div style={{ fontSize: 28, color: "#8e8e8e" }}>
+          {`${site.person.name.toLowerCase()} · ${site.person.role.toLowerCase()} at mantaq`}
         </div>
       </div>
     ),

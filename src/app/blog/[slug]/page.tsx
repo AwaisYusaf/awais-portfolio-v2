@@ -50,8 +50,7 @@ export default async function BlogPost({ params }: Props) {
           description: metadata.summary,
           datePublished: metadata.publishedAt,
           url: `${siteUrl}/blog/${slug}`,
-          author: { "@type": "Person", name: site.founder.name },
-          publisher: { "@type": "Organization", name: site.name, url: siteUrl },
+          author: { "@type": "Person", name: site.person.name, url: siteUrl },
         }}
       />
       <Article

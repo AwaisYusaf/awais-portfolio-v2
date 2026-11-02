@@ -2,15 +2,12 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-export type Collection = "work" | "blog";
+export type Collection = "blog";
 
 export type Metadata = {
   title: string;
-  tagline: string;
   summary: string;
   publishedAt: string;
-  stack: string[];
-  images: string[];
 };
 
 export type Entry = {
@@ -32,11 +29,8 @@ function readMDXFile(filePath: string) {
 
   const metadata: Metadata = {
     title: data.title || "",
-    tagline: data.tagline || "",
     summary: data.summary || "",
     publishedAt: data.publishedAt,
-    stack: data.stack || [],
-    images: data.images || [],
   };
 
   return { metadata, content };
@@ -70,8 +64,4 @@ export function formatDate(date: string) {
     year: "numeric",
     timeZone: "UTC",
   });
-}
-
-export function formatYear(date: string) {
-  return date.slice(0, 4);
 }

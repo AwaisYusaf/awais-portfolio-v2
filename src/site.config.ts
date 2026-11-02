@@ -1,43 +1,69 @@
 // Everything on the site that isn't a case study or blog post lives here.
-// Placeholders to replace before launch: name, domain, email, bookingUrl.
+// Placeholder to replace before launch: domain.
 
 export const site = {
-  name: "[studio]",
+  name: "awais/notes",
   domain: "yourdomain.com",
-  email: "hello@yourdomain.com",
-  bookingUrl: "https://cal.com/your-link",
+  email: "awais@mantaq.co",
+  bookingUrl: "https://www.mantaq.co/#contact",
   description:
-    "a small dev studio building web apps, ai tools and the backends behind them.",
-  founder: {
+    "awais yusaf, co-founder & cto at mantaq. i build document automation, ai and web systems.",
+  person: {
     name: "Awais Yusaf",
+    role: "Co-Founder & CTO",
     avatar: "/images/avatar.jpeg",
   },
 
-  // Shows the green "open for new projects" line on the home page.
-  available: true,
+  // The green line above the hero. Set to null to hide it.
+  availability: "mantaq is taking new projects" as string | null,
 
   hero: {
-    line: "we build web apps, ai tools and the backend that keeps them running.",
-    sub: "a small dev studio run by awais yusaf. no account managers, you talk to the people writing the code.",
+    line: "i build software for teams that run on paperwork.",
+    sub: "i'm awais yusaf, co-founder & cto at mantaq, where i build document and workflow automation for teams in the us, uk and eu.",
   },
 
-  industries: "worked across healthcare, legal, e-commerce, telecom and events.",
+  mantaq: {
+    url: "https://www.mantaq.co",
+    caseStudies: [
+      {
+        name: "peopleworks",
+        detail: "hr letters, signing and reporting",
+        href: "https://www.mantaq.co/case-studies/peopleworks",
+      },
+      {
+        name: "va claims made easy",
+        detail: "ai platform for va disability claims",
+        href: "https://www.mantaq.co/case-studies/va-claims-made-easy",
+      },
+      {
+        name: "compliance portal",
+        detail: "credential, signature and audit tracking",
+        href: "https://www.mantaq.co/case-studies/compliance-portal",
+      },
+      {
+        name: "stay funded 360",
+        detail: "receipt capture and grant reconciliation",
+        href: "https://www.mantaq.co/case-studies/stay-funded-360",
+      },
+    ],
+  },
 
   services: [
-    { name: "web apps", detail: "saas, dashboards, internal tools" },
-    { name: "ai features", detail: "document extraction, chat, agents" },
-    { name: "automation", detail: "scrapers, data pipelines, ocr" },
-    { name: "cloud", detail: "aws, docker, deploys that don't break" },
+    { name: "document automation", detail: "intake, reading, review screens, documents out" },
+    { name: "platforms", detail: "the app and backend it runs on, in your accounts" },
+    { name: "interfaces", detail: "the screens your team uses every day" },
+    { name: "ai features", detail: "extraction, chat, agents, with a person in the loop" },
   ],
 
   process: [
-    "quick call, tell us what you're building",
-    "scope + quote",
-    "weekly builds you can click through",
-    "launch, then we stick around",
+    "watch the work before building anything",
+    "cut the steps that shouldn't exist",
+    "build in pieces, with your real documents",
+    "stay after launch",
   ],
 
   socials: [
+    { label: "mantaq", href: "https://www.mantaq.co" },
     { label: "github", href: "https://github.com/AwaisYusaf" },
     { label: "linkedin", href: "https://www.linkedin.com/in/awaisyusaf" },
     { label: "x", href: "https://x.com/awaisyusaf" },

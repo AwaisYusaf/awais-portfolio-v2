@@ -1,7 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // TODO: rename once the agency name is final.
-  "name": "agency-site",
+  "name": "awais-notes",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./out",

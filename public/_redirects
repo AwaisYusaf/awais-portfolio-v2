@@ -4,3 +4,4 @@
 /gallery /  301
 /en /  301
 /en/* /:splat  301
+/work/* /#work  301

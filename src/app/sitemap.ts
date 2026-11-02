@@ -13,12 +13,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: today,
   }));
 
-  const entries = (["work", "blog"] as const).flatMap((collection) =>
-    getEntries(collection).map((entry) => ({
-      url: `${siteUrl}/${collection}/${entry.slug}`,
-      lastModified: entry.metadata.publishedAt,
-    })),
-  );
+  const posts = getEntries("blog").map((entry) => ({
+    url: `${siteUrl}/blog/${entry.slug}`,
+    lastModified: entry.metadata.publishedAt,
+  }));
 
-  return [...pages, ...entries];
+  return [...pages, ...posts];
 }

@@ -16,7 +16,7 @@ const mono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${site.name} · dev studio`,
+    default: `${site.person.name.toLowerCase()} · ${site.person.role.toLowerCase()} at mantaq`,
     template: `%s · ${site.name}`,
   },
   description: site.description,

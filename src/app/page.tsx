@@ -4,7 +4,6 @@ import { JsonLd } from "@/components/JsonLd";
 import { PillLink } from "@/components/PillLink";
 import { Row } from "@/components/Row";
 import { Section } from "@/components/Section";
-import { formatYear, getEntries } from "@/lib/content";
 import { site, siteUrl } from "@/site.config";
 
 export const metadata: Metadata = {
@@ -12,27 +11,26 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const work = getEntries("work");
-
   return (
     <>
       <JsonLd
         data={{
-          "@type": "Organization",
-          name: site.name,
+          "@type": "Person",
+          name: site.person.name,
+          jobTitle: site.person.role,
           url: siteUrl,
           email: site.email,
-          description: site.description,
-          founder: { "@type": "Person", name: site.founder.name },
+          image: `${siteUrl}${site.person.avatar}`,
+          worksFor: { "@type": "Organization", name: "Mantaq", url: site.mantaq.url },
           sameAs: site.socials.map((social) => social.href),
         }}
       />
 
       <section className="flex flex-col gap-7 pt-24 pb-22">
-        {site.available && (
+        {site.availability && (
           <p className="flex items-center gap-2.5 text-[13px] text-muted">
             <span className="size-2 rounded-full bg-dot" aria-hidden="true" />
-            open for new projects
+            {site.availability}
           </p>
         )}
         <h1 className="text-[28px] leading-[1.35] font-medium tracking-[-0.02em]">
@@ -47,31 +45,30 @@ export default function Home() {
         </div>
       </section>
 
-      <Section id="work" label={`work (${work.length})`}>
-        {work.map((entry) => (
+      <Section id="work" label={`recent work (${site.mantaq.caseStudies.length})`}>
+        {site.mantaq.caseStudies.map((study) => (
           <Row
-            key={entry.slug}
-            href={`/work/${entry.slug}`}
-            name={entry.metadata.title}
-            detail={entry.metadata.tagline}
-            meta={formatYear(entry.metadata.publishedAt)}
+            key={study.href}
+            href={study.href}
+            name={study.name}
+            detail={study.detail}
+            meta="mantaq.co"
           />
         ))}
-        <p className="mt-5 text-[13px] text-muted">{site.industries}</p>
       </Section>
 
-      <Section id="services" label="what we do">
+      <Section id="services" label="what i build at mantaq">
         <ul className="flex flex-col gap-2.5">
           {site.services.map((service) => (
             <li key={service.name} className="flex flex-wrap gap-x-4">
-              <span className="shrink-0 basis-44">{service.name}</span>
-              <span className="flex-[1_1_260px] text-muted">{service.detail}</span>
+              <span className="shrink-0 basis-52">{service.name}</span>
+              <span className="flex-[1_1_240px] text-muted">{service.detail}</span>
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section label="how it works">
+      <Section label="how i work">
         <ol className="flex flex-col gap-2.5">
           {site.process.map((step, index) => (
             <li key={step} className="flex gap-4">
@@ -84,7 +81,7 @@ export default function Home() {
 
       <Section id="contact" label="contact" className="pt-14 pb-12">
         <p className="mb-4 text-[22px] font-medium tracking-[-0.02em]">
-          {"got an idea? let's talk."}
+          {"got a process that eats your team's week? let's talk."}
         </p>
         <p className="flex flex-wrap gap-x-6 gap-y-2">
           <a

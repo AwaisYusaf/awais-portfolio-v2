@@ -7,7 +7,7 @@ import { site } from "@/site.config";
 
 export const metadata: Metadata = {
   title: "blog",
-  description: `notes from ${site.name} on building software, ai and the web.`,
+  description: `notes from ${site.person.name.toLowerCase()} on building software, ai and the web.`,
   alternates: { canonical: "/blog" },
 };
 
