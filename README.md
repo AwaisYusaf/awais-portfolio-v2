@@ -30,13 +30,13 @@ publishedAt: "2026-11-02"
 
 ## Build and deploy
 
-`next build` writes a fully static site to `out/`. Cloudflare serves it as static assets (`wrangler.jsonc`), and `public/_redirects` sends old portfolio URLs to the new pages.
+`next build` writes a fully static site to `out/` (Node 26).
+
+The live site is on Vercel at [www.awaisyusaf.com](https://www.awaisyusaf.com): every push to `main` deploys. Redirects for old portfolio URLs are in `vercel.json`.
+
+The same build can also run on Cloudflare (`wrangler.jsonc`, with redirects in `public/_redirects`):
 
 ```bash
 npm run preview    # build, then serve out/ locally with wrangler
 npm run deploy     # build, then deploy to Cloudflare
 ```
-
-## Before launch
-
-Set `domain` in `src/site.config.ts` to the real domain.

@@ -1,9 +1,9 @@
-// Everything on the site that isn't a case study or blog post lives here.
-// Placeholder to replace before launch: domain.
+// Everything on the site that isn't a blog post lives here.
 
 export const site = {
   name: "awais/notes",
-  domain: "yourdomain.com",
+  // The primary host: Vercel redirects awaisyusaf.com to www.
+  domain: "www.awaisyusaf.com",
   email: "awais@mantaq.co",
   phone: "+92 306 5396548", // whatsapp and calls
   bookingUrl: "https://www.mantaq.co/#contact",
