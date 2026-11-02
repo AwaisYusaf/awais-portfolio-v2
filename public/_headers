@@ -1,0 +1,3 @@
+# The build writes the OG image without a file extension, so set its type here.
+/opengraph-image
+  Content-Type: image/png

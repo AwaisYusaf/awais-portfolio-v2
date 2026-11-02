@@ -1,31 +1,24 @@
-import { getPosts } from '@/app/utils'
-import { baseURL } from '@/app/resources'
-import { routing } from '@/i18n/routing'
+import type { MetadataRoute } from "next";
 
-export default async function sitemap() {
+import { getEntries } from "@/lib/content";
+import { siteUrl } from "@/site.config";
 
-    const locales = routing.locales;
+export const dynamic = "force-static";
 
-    let blogs = locales.flatMap((locale) => 
-        getPosts(['src', 'app', '[locale]', 'blog', 'posts', locale]).map((post) => ({
-            url: `${baseURL}/${locale}/blog/${post.slug}`,
-            lastModified: post.metadata.publishedAt,
-        }))
-    );
+export default function sitemap(): MetadataRoute.Sitemap {
+  const today = new Date().toISOString().split("T")[0];
 
-    let works = locales.flatMap((locale) => 
-        getPosts(['src', 'app', '[locale]', 'work', 'projects', locale]).map((post) => ({
-            url: `${baseURL}/${locale}/work/${post.slug}`,
-            lastModified: post.metadata.publishedAt,
-        }))
-    );
+  const pages = ["", "/blog"].map((route) => ({
+    url: `${siteUrl}${route}`,
+    lastModified: today,
+  }));
 
-    let routes = locales.flatMap((locale)=> 
-        ['', '/blog', '/work'].map((route) => ({
-            url: `${baseURL}/${locale}${route}`,
-            lastModified: new Date().toISOString().split('T')[0],
-        }))
-    );
+  const entries = (["work", "blog"] as const).flatMap((collection) =>
+    getEntries(collection).map((entry) => ({
+      url: `${siteUrl}/${collection}/${entry.slug}`,
+      lastModified: entry.metadata.publishedAt,
+    })),
+  );
 
-    return [...routes, ...blogs, ...works]
+  return [...pages, ...entries];
 }

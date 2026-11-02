@@ -1,7 +1,10 @@
 {
-  "name": "worker-name",
-  "compatibility_date": "2025-03-23",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // TODO: rename once the agency name is final.
+  "name": "agency-site",
+  "compatibility_date": "2026-11-01",
   "assets": {
-    "directory": "./dist"
+    "directory": "./out",
+    "not_found_handling": "404-page"
   }
 }

@@ -1,53 +1,24 @@
-import { renderContent } from "@/app/resources";
-import { Flex, IconButton, SmartLink, Text } from "@/once-ui/components"
-import { useTranslations } from "next-intl";
-// import { person, social } from '@/app/resources'
+import { site } from "@/site.config";
 
-export const Footer = () => {
-    const currentYear = new Date().getFullYear();
-
-    const t = useTranslations();
-    const { person, social } = renderContent(t);
-
-    return (
-        <Flex
-            as="footer"
-            position="relative"
-            fillWidth padding="8"
-            justifyContent="center">
-            <Flex
-                fillWidth maxWidth="m" paddingY="8" paddingX="16"
-                justifyContent="space-between" alignItems="center">
-                <Text
-                    variant="body-default-s"
-                    onBackground="neutral-strong">
-                    <Text
-                        onBackground="neutral-weak">
-                        © {currentYear} /
-                    </Text>
-                    <Text paddingX="4">
-                        {person.name}
-                    </Text>
-                    <Text onBackground="neutral-weak">
-                        {/* Usage of this template requires attribution. Please don't remove the link to Once UI. */}
-                        {/* / Build your portfolio with <SmartLink style={{marginLeft: '-0.125rem'}} href="https://once-ui.com/templates/magic-portfolio">Once UI</SmartLink> */}
-                    </Text>
-                </Text>
-                <Flex
-                    gap="16">
-                    {social.map((item) => (
-                        item.link && (
-                            <IconButton
-                                key={item.name}
-                                href={item.link}
-                                icon={item.icon}
-                                tooltip={item.name}
-                                size="s"
-                                variant="ghost"/>
-                        )
-                    ))}
-                </Flex>
-            </Flex>
-        </Flex>
-    )
+export function Footer() {
+  return (
+    <footer className="flex flex-wrap justify-between gap-x-4 gap-y-2 border-t border-line pt-5 pb-10 text-[13px] text-muted">
+      <span>
+        © {new Date().getFullYear()} {site.name}
+      </span>
+      <span className="flex gap-4">
+        {site.socials.map((social) => (
+          <a
+            key={social.label}
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-line underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
+          >
+            {social.label}
+          </a>
+        ))}
+      </span>
+    </footer>
+  );
 }

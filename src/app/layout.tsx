@@ -1,199 +1,62 @@
-import "@/once-ui/styles/index.scss";
-import "@/once-ui/tokens/index.scss";
-
-import classNames from "classnames";
-
-import { Flex, Background } from "@/once-ui/components";
-import { Footer, Header, RouteGuard } from "@/components";
-import { baseURL, effects, style } from "@/app/resources";
-
-import { Inter } from "next/font/google";
-import { Source_Code_Pro } from "next/font/google";
-
-import { NextIntlClientProvider } from "next-intl";
-import {
-  getMessages,
-  getTranslations,
-  unstable_setRequestLocale,
-} from "next-intl/server";
-
-import { Metadata } from "next";
-import { routing } from "@/i18n/routing";
-import { renderContent } from "@/app/resources";
+import type { Metadata } from "next";
+import { Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import Head from "next/head";
 
-export async function generateMetadata({
-  params: { locale },
-}: {
-  params: { locale: string };
-}) {
-  const t = await getTranslations();
-  const { person, home } = renderContent(t);
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { site, siteUrl } from "@/site.config";
+import "./globals.css";
 
-  return {
-    metadataBase: new URL(`https://${baseURL}/${locale}`),
-    title: home.title,
-    description: home.description,
-    openGraph: {
-      title: `${person.firstName}'s Portfolio`,
-      description: "Portfolio website showcasing my work.",
-      url: baseURL,
-      siteName: `${person.firstName}'s Portfolio`,
-      locale: "en_US",
-      type: "website",
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    },
-  };
-}
-
-const primary = Inter({
-  variable: "--font-primary",
+const mono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
 });
 
-type FontConfig = {
-  variable: string;
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: `${site.name} · dev studio`,
+    template: `%s · ${site.name}`,
+  },
+  description: site.description,
+  openGraph: {
+    siteName: site.name,
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
-/*
-	Replace with code for secondary and tertiary fonts
-	from https://once-ui.com/customize
-*/
-const secondary: FontConfig | undefined = undefined;
-const tertiary: FontConfig | undefined = undefined;
-/*
- */
+// Runs before first paint so the saved (or system) theme applies without a flash.
+const themeScript = `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`;
 
-const code = Source_Code_Pro({
-  variable: "--font-code",
-  subsets: ["latin"],
-  display: "swap",
-});
+const gtmScript = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${site.gtmId}');`;
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-  params: { locale: string };
-}
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
-
-export default async function RootLayout({
-  children,
-  params: { locale },
-}: RootLayoutProps) {
-  unstable_setRequestLocale(locale);
-  const messages = await getMessages();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-
-<Script
-        id="google-tag-manager"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NPP3249S');
-
-          `}}
+    <html lang="en" className={mono.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="min-h-screen bg-bg text-fg">
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${site.gtmId}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
           />
-{/* GTM-NPP3249S */}
-
-    
-    <NextIntlClientProvider messages={messages}>
-      {/* <Script
-        strategy="afterInteractive"
-        src="https://www.googletagmanager.com/gtag/js?id=G-S99DJB5Z6F"
-        />
-        <Script
-        id="google-analytics"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-S99DJB5Z6F', {
-            page_path: window.location.pathname,
-            });
-            `,
-            }}
-            /> */}
-
-
-
-
-      <Flex
-        as="html"
-        lang="en"
-        background="page"
-        data-neutral={style.neutral}
-        data-brand={style.brand}
-        data-accent={style.accent}
-        data-solid={style.solid}
-        data-solid-style={style.solidStyle}
-        data-theme={style.theme}
-        data-border={style.border}
-        data-surface={style.surface}
-        data-transition={style.transition}
-        className={classNames(
-          primary.variable,
-          secondary ? secondary.variable : "",
-          tertiary ? tertiary.variable : "",
-          code.variable
-        )}
-        >
-        <Flex
-          style={{ minHeight: "100vh" }}
-          as="body"
-          fillWidth
-          margin="0"
-          padding="0"
-          direction="column"
-          >
-          <Background
-            gradient={effects.gradient}
-            dots={effects.dots}
-            lines={effects.lines}
-            />
-          <Flex fillWidth minHeight="16"></Flex>
-
-          <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NPP3249S"
-height="0" width="0" style={{display: "none", visibility: "hidden"}}></iframe></noscript>
-
+        </noscript>
+        <div className="mx-auto flex min-h-screen max-w-[680px] flex-col px-6">
           <Header />
-          <Flex
-            zIndex={0}
-            fillWidth
-            paddingY="l"
-            paddingX="l"
-            justifyContent="center"
-            flex={1}
-            >
-            <Flex justifyContent="center" fillWidth minHeight="0">
-              <RouteGuard>{children}</RouteGuard>
-            </Flex>
-          </Flex>
+          <main className="flex-1">{children}</main>
           <Footer />
-        </Flex>
-      </Flex>
-    </NextIntlClientProvider>
-            </>
+        </div>
+        <Script id="gtm" strategy="afterInteractive">
+          {gtmScript}
+        </Script>
+      </body>
+    </html>
   );
 }

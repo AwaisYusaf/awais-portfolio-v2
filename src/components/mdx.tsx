@@ -1,148 +1,99 @@
-import { MDXRemote, MDXRemoteProps } from 'next-mdx-remote/rsc';
-import React, { ReactNode } from 'react';
+import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote/rsc";
+import Link from "next/link";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-import { SmartImage, SmartLink, Text } from '@/once-ui/components';
-import { HeadingLink } from '@/components';
+const linkClass =
+  "underline decoration-line underline-offset-4 transition-colors hover:decoration-fg";
 
-import { TextProps } from '@/once-ui/interfaces';
-import { SmartImageProps } from '@/once-ui/components/SmartImage';
-
-type TableProps = {
-    data: {
-        headers: string[];
-        rows: string[][];
-    };
-};
-
-function Table({ data }: TableProps) {
-    const headers = data.headers.map((header, index) => (
-        <th key={index}>{header}</th>
-    ));
-    const rows = data.rows.map((row, index) => (
-        <tr key={index}>
-        {row.map((cell, cellIndex) => (
-            <td key={cellIndex}>{cell}</td>
-        ))}
-        </tr>
-    ));
-
+function CustomLink({ href = "", children, ...props }: ComponentPropsWithoutRef<"a">) {
+  if (href.startsWith("/")) {
     return (
-        <table>
-            <thead>
-                <tr>{headers}</tr>
-            </thead>
-            <tbody>{rows}</tbody>
-        </table>
+      <Link href={href} className={linkClass} {...props}>
+        {children}
+      </Link>
     );
-}
+  }
 
-type CustomLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
-    href: string;
-    children: ReactNode;
-};
-
-function CustomLink({ href, children, ...props }: CustomLinkProps) {
-    if (href.startsWith('/')) {
-        return (
-            <SmartLink href={href} {...props}>
-                {children}
-            </SmartLink>
-        );
-    }
-
-    if (href.startsWith('#')) {
-        return <a href={href} {...props}>{children}</a>;
-    }
-
+  if (href.startsWith("#")) {
     return (
-        <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-            {children}
-        </a>
+      <a href={href} className={linkClass} {...props}>
+        {children}
+      </a>
     );
-}
+  }
 
-function createImage({ alt, src, ...props }: SmartImageProps & { src: string }) {
-    if (!src) {
-        console.error("SmartImage requires a valid 'src' property.");
-        return null;
-    }
-
-    return (
-        <SmartImage
-            className="my-20"
-            enlarge
-            radius="m"
-            aspectRatio="16 / 9"
-            alt={alt}
-            src={src}
-            {...props}/>
-        )
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={linkClass} {...props}>
+      {children}
+    </a>
+  );
 }
 
 function slugify(str: string): string {
-    return str
-        .toString()
-        .toLowerCase()
-        .trim() // Remove whitespace from both ends of a string
-        .replace(/\s+/g, '-') // Replace spaces with -
-        .replace(/&/g, '-and-') // Replace & with 'and'
-        .replace(/[^\w\-]+/g, '') // Remove all non-word characters except for -
-        .replace(/\-\-+/g, '-') // Replace multiple - with single -
+  return str
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/&/g, "-and-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
 }
 
-function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
-    const CustomHeading = ({ children, ...props }: TextProps) => {
-    const slug = slugify(children as string);
-        return (
-            <HeadingLink
-                style={{marginTop: 'var(--static-space-24)', marginBottom: 'var(--static-space-12)'}}
-                level={level}
-                id={slug}
-                {...props}>
-                {children}
-            </HeadingLink>
-        );
-    };
-  
-    CustomHeading.displayName = `Heading${level}`;
-  
-    return CustomHeading;
+// Headings stay body-sized: weight does the work, not size.
+function createHeading(level: 2 | 3 | 4) {
+  const Tag = `h${level}` as const;
+  const CustomHeading = ({ children }: { children?: ReactNode }) => {
+    const slug = slugify(String(children));
+    return (
+      <Tag id={slug} className="group mt-10 mb-3 scroll-mt-6 font-medium lowercase">
+        <a href={`#${slug}`}>
+          {children}
+          <span className="ml-2 text-muted opacity-0 transition-opacity group-hover:opacity-100">#</span>
+        </a>
+      </Tag>
+    );
+  };
+  CustomHeading.displayName = `Heading${level}`;
+  return CustomHeading;
 }
 
-function createParagraph({ children }: TextProps) {
-    return (
-        <Text style={{lineHeight: '150%'}}
-            variant="body-default-m"
-            onBackground="neutral-medium"
-            marginTop="8"
-            marginBottom="12">
-            {children}
-        </Text>
-    );
+function Image({ src = "", alt = "" }: ComponentPropsWithoutRef<"img">) {
+  return (
+    // MDX images have unknown sizes, so a plain <img> is simpler than next/image here.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={String(src)} alt={alt} loading="lazy" className="my-8 w-full rounded-xl border border-line" />
+  );
+}
+
+const components: MDXRemoteProps["components"] = {
+  h1: createHeading(2),
+  h2: createHeading(2),
+  h3: createHeading(3),
+  h4: createHeading(4),
+  p: (props) => <p className="my-4" {...props} />,
+  a: CustomLink,
+  img: Image,
+  strong: (props) => <strong className="font-medium" {...props} />,
+  ul: (props) => <ul className="my-4 flex flex-col gap-2" {...props} />,
+  ol: (props) => <ol className="my-4 flex list-decimal flex-col gap-2 pl-6 marker:text-muted" {...props} />,
+  li: (props) => (
+    <li
+      className="[ul>&]:relative [ul>&]:pl-6 [ul>&]:before:absolute [ul>&]:before:left-0 [ul>&]:before:text-muted [ul>&]:before:content-['–']"
+      {...props}
+    />
+  ),
+  blockquote: (props) => <blockquote className="my-6 border-l border-line pl-4 text-muted" {...props} />,
+  hr: () => <hr className="my-10 border-line" />,
+  code: (props) => <code className="rounded bg-line px-1 py-0.5 text-[13px]" {...props} />,
+  pre: (props) => (
+    <pre
+      className="my-6 overflow-x-auto rounded-xl border border-line p-4 text-[13px] [&>code]:bg-transparent [&>code]:p-0"
+      {...props}
+    />
+  ),
 };
 
-const components = {
-    p: createParagraph as any,
-    h1: createHeading(1) as any,
-    h2: createHeading(2) as any,
-    h3: createHeading(3) as any,
-    h4: createHeading(4) as any,
-    h5: createHeading(5) as any,
-    h6: createHeading(6) as any,
-    img: createImage as any,
-    a: CustomLink as any,
-    Table,
-};
-
-type CustomMDXProps = MDXRemoteProps & {
-    components?: typeof components;
-};
-
-export function CustomMDX(props: CustomMDXProps) {
-    return (
-        <MDXRemote
-            {...props}
-            components={{ ...components, ...(props.components || {}) }}
-        />
-    );
+export function Mdx({ source }: { source: string }) {
+  return <MDXRemote source={source} components={components} />;
 }
