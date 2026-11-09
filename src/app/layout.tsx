@@ -26,7 +26,10 @@ export const metadata: Metadata = {
     locale: "en_US",
   },
   twitter: { card: "summary_large_image" },
-  verification: { google: site.googleSiteVerification },
+  verification: {
+    google: site.googleSiteVerification,
+    other: { "msvalidate.01": site.bingSiteVerification },
+  },
 };
 
 // Runs before first paint so the saved (or system) theme applies without a flash.

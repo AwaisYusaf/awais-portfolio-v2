@@ -71,8 +71,10 @@ export const site = {
   ],
 
   gtmId: "GTM-NPP3249S",
-  // Google Search Console ownership check (HTML tag method). Keep it.
+  // Ownership checks for Google Search Console and Bing Webmaster Tools
+  // (HTML meta tag method). Keep them, or the sites become unverified.
   googleSiteVerification: "HbmZfbFERqIKbNowdRS4nRGbEppZbcj_YgqEbtqKOMg",
+  bingSiteVerification: "CD0C6A3BCD800198FD1491CD31D38CC7",
 };
 
 export const siteUrl = `https://${site.domain}`;
