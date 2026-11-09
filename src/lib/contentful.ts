@@ -1,4 +1,7 @@
-// A small Contentful client, used at build time (plain fetch, no SDK).
+import http from "node:http";
+import https from "node:https";
+
+// A small Contentful client, used at build time (no SDK).
 //
 // `next build` reads published entries from the Content Delivery API, so
 // the static site only ever contains published posts. `npm run dev` also
@@ -62,13 +65,41 @@ function endpoint(api: Api) {
   return { url: `${origin}/spaces/${space}/environments/${environment}/entries`, token };
 }
 
+// A GET with Node's own http client instead of fetch. Next caches fetch
+// responses during a build (in .next/cache, which Vercel keeps between
+// deploys), so a rebuild after publishing could build old posts. Asking
+// fetch not to cache isn't an option: it stops the static export.
+function get(url: string, token: string): Promise<{ status: number; statusText: string; body: string }> {
+  const client = url.startsWith("https:") ? https : http;
+  return new Promise((resolve, reject) => {
+    const req = client.get(url, { headers: { Authorization: `Bearer ${token}` } }, (res) => {
+      let body = "";
+      res.setEncoding("utf8");
+      res.on("data", (chunk: string) => (body += chunk));
+      res.on("end", () =>
+        resolve({ status: res.statusCode ?? 0, statusText: res.statusMessage ?? "", body }),
+      );
+    });
+    req.setTimeout(30_000, () => req.destroy(new Error(`Contentful request timed out: ${url}`)));
+    req.on("error", reject);
+  });
+}
+
+function parse(body: string) {
+  try {
+    return JSON.parse(body);
+  } catch {
+    return {};
+  }
+}
+
 async function request(api: Api, query: Record<string, string>): Promise<Collection> {
   const { url, token } = endpoint(api);
   const target = `${url}?${new URLSearchParams(query)}`;
 
   for (let attempt = 1; ; attempt++) {
-    const res = await fetch(target, { headers: { Authorization: `Bearer ${token}` } });
-    if (res.ok) return res.json();
+    const res = await get(target, token);
+    if (res.status >= 200 && res.status < 300) return JSON.parse(res.body);
 
     // Rate limits and server errors are usually gone a moment later.
     if ((res.status === 429 || res.status >= 500) && attempt < 4) {
@@ -76,7 +107,7 @@ async function request(api: Api, query: Record<string, string>): Promise<Collect
       continue;
     }
 
-    const body = await res.json().catch(() => ({}));
+    const body = parse(res.body);
     const hint =
       res.status === 401
         ? " Check the access token."
