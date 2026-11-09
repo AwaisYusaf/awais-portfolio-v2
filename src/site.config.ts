@@ -71,6 +71,8 @@ export const site = {
   ],
 
   gtmId: "GTM-NPP3249S",
+  // Google Search Console ownership check (HTML tag method). Keep it.
+  googleSiteVerification: "HbmZfbFERqIKbNowdRS4nRGbEppZbcj_YgqEbtqKOMg",
 };
 
 export const siteUrl = `https://${site.domain}`;
