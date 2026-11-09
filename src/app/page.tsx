@@ -1,36 +1,42 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
+import { ContactDetails } from "@/components/ContactDetails";
 import { JsonLd } from "@/components/JsonLd";
 import { PillLink } from "@/components/PillLink";
 import { Row } from "@/components/Row";
 import { Section } from "@/components/Section";
+import { formatDate, getPosts } from "@/lib/blog";
+import { person } from "@/lib/seo";
 import { site, siteUrl } from "@/site.config";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const linkClass =
-  "underline decoration-line underline-offset-4 transition-colors hover:decoration-fg";
+const moreClass = "inline-block pt-4 text-[13px] text-muted transition-colors hover:text-fg";
 
-export default function Home() {
-  const phoneDigits = site.phone.replace(/\D/g, "");
-  const tel = `tel:+${phoneDigits}`;
-  const whatsapp = `https://wa.me/${phoneDigits}`;
+export default async function Home() {
+  const posts = (await getPosts()).slice(0, 3);
 
   return (
     <>
       <JsonLd
         data={{
-          "@type": "Person",
-          name: site.person.name,
-          jobTitle: site.person.role,
-          url: siteUrl,
-          email: site.email,
-          telephone: site.phone,
-          image: `${siteUrl}${site.person.avatar}`,
-          worksFor: { "@type": "Organization", name: "Mantaq", url: site.mantaq.url },
-          sameAs: site.socials.map((social) => social.href),
+          "@graph": [
+            {
+              // Tells Google the site's name ("Awais Yusaf"), shown above results.
+              "@type": "WebSite",
+              "@id": `${siteUrl}/#website`,
+              name: site.seo.siteName,
+              alternateName: ["awaisyusaf.com", site.name],
+              url: siteUrl,
+              description: site.seo.description,
+              inLanguage: "en",
+              publisher: { "@id": person["@id"] },
+            },
+            { ...person, email: site.email, telephone: site.phone, description: site.seo.description },
+          ],
         }}
       />
 
@@ -47,7 +53,7 @@ export default function Home() {
         <p className="text-muted">{site.hero.sub}</p>
         <div className="flex flex-wrap gap-3 pt-1">
           <PillLink href={site.bookingUrl}>book a meeting →</PillLink>
-          <PillLink href="#work" variant="outline">
+          <PillLink href="/work" variant="outline">
             see work
           </PillLink>
         </div>
@@ -63,63 +69,39 @@ export default function Home() {
             meta="mantaq.co"
           />
         ))}
+        <Link href="/work" className={moreClass}>
+          all work and what i build →
+        </Link>
       </Section>
 
-      <Section id="services" label="what i build at mantaq">
-        <ul className="flex flex-col gap-2.5">
-          {site.services.map((service) => (
-            <li key={service.name} className="flex flex-wrap gap-x-4">
-              <span className="shrink-0 basis-52">{service.name}</span>
-              <span className="flex-[1_1_240px] text-muted">{service.detail}</span>
-            </li>
+      {posts.length > 0 && (
+        <Section label="latest writing">
+          {posts.map((post) => (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              className="group flex flex-wrap items-baseline gap-x-5 gap-y-1 border-b border-line py-4"
+            >
+              <time dateTime={post.publishedAt} className="shrink-0 basis-24 text-[13px] text-muted">
+                {formatDate(post.publishedAt).toLowerCase()}
+              </time>
+              <span className="flex-[1_1_360px] font-medium">
+                {post.draft && <span className="text-muted">[draft] </span>}
+                {post.title}
+              </span>
+            </Link>
           ))}
-        </ul>
-      </Section>
-
-      <Section label="how i work">
-        <ol className="flex flex-col gap-2.5">
-          {site.process.map((step, index) => (
-            <li key={step} className="flex gap-4">
-              <span className="text-muted">{String(index + 1).padStart(2, "0")}</span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
-      </Section>
+          <Link href="/blog" className={moreClass}>
+            all posts →
+          </Link>
+        </Section>
+      )}
 
       <Section id="contact" label="contact" className="pt-14 pb-12">
         <p className="mb-4 text-[22px] font-medium tracking-[-0.02em]">
           {"got a process that eats your team's week? let's talk."}
         </p>
-        <div className="flex flex-col items-start gap-2">
-          <a href={`mailto:${site.email}`} className={linkClass}>
-            {site.email}
-          </a>
-          <p>
-            <a href={tel} className={linkClass}>
-              {site.phone}
-            </a>
-            <span className="text-muted">
-              {" ("}
-              <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-fg">
-                whatsapp
-              </a>
-              {" / "}
-              <a href={tel} className="transition-colors hover:text-fg">
-                call
-              </a>
-              {")"}
-            </span>
-          </p>
-          <a
-            href={site.bookingUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted transition-colors hover:text-fg"
-          >
-            or book a meeting →
-          </a>
-        </div>
+        <ContactDetails />
       </Section>
     </>
   );

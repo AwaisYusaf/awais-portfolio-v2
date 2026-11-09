@@ -7,8 +7,20 @@ export const site = {
   email: "awais@mantaq.co",
   phone: "+92 306 5396548", // whatsapp and calls
   bookingUrl: "https://www.mantaq.co/#contact",
-  description:
-    "awais yusaf, co-founder & cto at mantaq. i build document automation, ai and web systems.",
+
+  // How the site appears in Google and in link previews. The pages
+  // themselves are lowercase; search results use normal capitalisation.
+  seo: {
+    // Shown as the site name above results, and after every page title:
+    // "Blog | Awais Yusaf".
+    siteName: "Awais Yusaf",
+    // The home page's title in search results.
+    title: "Awais Yusaf | Co-Founder & CTO at Mantaq",
+    // The home page's description in search results (keep under 160 characters).
+    description:
+      "I'm Awais Yusaf, Co-Founder & CTO at Mantaq. I build document and workflow automation, AI features and web platforms for teams in the US, UK and EU.",
+  },
+
   person: {
     name: "Awais Yusaf",
     role: "Co-Founder & CTO",
@@ -21,6 +33,15 @@ export const site = {
   hero: {
     line: "i build software for teams that run on paperwork.",
     sub: "i'm awais yusaf, co-founder & cto at mantaq, where i build document and workflow automation for teams in the us, uk and eu.",
+  },
+
+  // The /about page.
+  about: {
+    line: "i'm awais yusaf, co-founder & cto at mantaq.",
+    paragraphs: [
+      "mantaq is a small team in islamabad. we build document and workflow automation for teams in the us, uk and eu: forms come in, a person reviews them, documents go out, and every step is on record.",
+      "i lead how we build it: the platform, the screens people use every day, and the ai that reads documents with a person in the loop. clients own the code.",
+    ],
   },
 
   mantaq: {

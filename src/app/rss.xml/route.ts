@@ -37,9 +37,9 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>${escape(site.name)}</title>
+    <title>${escape(site.seo.siteName)}</title>
     <link>${siteUrl}/blog</link>
-    <description>${escape(site.description)}</description>
+    <description>${escape(site.seo.description)}</description>
     <language>en</language>${posts[0] ? `\n    <lastBuildDate>${rssDate(posts[0].updatedAt ?? posts[0].publishedAt)}</lastBuildDate>` : ""}
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />${items}
   </channel>

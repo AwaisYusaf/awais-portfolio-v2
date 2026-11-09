@@ -16,12 +16,14 @@ const mono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${site.person.name.toLowerCase()} · ${site.person.role.toLowerCase()} at mantaq`,
-    template: `%s · ${site.name}`,
+    default: site.seo.title,
+    template: `%s | ${site.seo.siteName}`,
   },
-  description: site.description,
+  description: site.seo.description,
+  applicationName: site.seo.siteName,
+  authors: [{ name: site.person.name, url: siteUrl }],
   openGraph: {
-    siteName: site.name,
+    siteName: site.seo.siteName,
     type: "website",
     locale: "en_US",
   },
@@ -42,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={mono.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title={site.seo.siteName} href="/rss.xml" />
       </head>
       <body className="min-h-screen bg-bg text-fg">
         <noscript>

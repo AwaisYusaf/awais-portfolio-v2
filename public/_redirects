@@ -1,7 +1,5 @@
 # Old portfolio URLs -> new site (Cloudflare static assets)
-/about /  301
-/work /#work  301
 /gallery /  301
 /en /  301
 /en/* /:splat  301
-/work/* /#work  301
+/work/* /work  301

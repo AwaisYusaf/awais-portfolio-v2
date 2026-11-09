@@ -3,10 +3,10 @@ import { site } from "@/site.config";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const links = [
-  { href: "/#work", label: "work" },
-  { href: "/#services", label: "services" },
+  { href: "/about", label: "about" },
+  { href: "/work", label: "work" },
   { href: "/blog", label: "blog" },
-  { href: "/#contact", label: "contact" },
+  { href: "/contact", label: "contact" },
 ];
 
 export function Header() {

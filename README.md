@@ -1,6 +1,6 @@
 # awais/notes
 
-Personal site of Awais Yusaf, co-founder & CTO at [Mantaq](https://www.mantaq.co). Static Next.js: a home page and a blog written in Contentful, in a plain monospace "notes" style with light and dark themes.
+Personal site of Awais Yusaf, co-founder & CTO at [Mantaq](https://www.mantaq.co). Static Next.js: home, about, work and contact pages, plus a blog written in Contentful, in a plain monospace "notes" style with light and dark themes.
 
 ## Run it
 
@@ -16,7 +16,7 @@ npm run dev                  # http://localhost:3000
 
 | What | Where |
 |---|---|
-| Name, email, booking link, domain, hero copy, Mantaq case study links, services, process, socials | `src/site.config.ts` |
+| Name, email, booking link, domain, search title and description, hero and about copy, Mantaq case study links, services, process, socials | `src/site.config.ts` |
 | Blog posts | Contentful (see below) |
 | Images for the site | `public/images/` |
 | Colors and fonts | `src/app/globals.css` |

@@ -6,7 +6,7 @@ import { site } from "@/site.config";
 
 // Generated once at build time; case study pages use their own cover instead.
 export const dynamic = "force-static";
-export const alt = site.description;
+export const alt = site.seo.description;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

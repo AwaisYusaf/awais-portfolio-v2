@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Article } from "@/components/Article";
 import { JsonLd } from "@/components/JsonLd";
 import { getPost, getPostParams, getPosts } from "@/lib/blog";
+import { breadcrumbs, person } from "@/lib/seo";
 import { site, siteUrl } from "@/site.config";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -57,15 +58,7 @@ export default async function BlogPost({ params }: Props) {
   // The next older post, wrapping round to the newest.
   const next = posts.length > 1 ? posts[(index + 1) % posts.length] : undefined;
   const url = `${siteUrl}/blog/${post.slug}`;
-  const author = {
-    "@type": "Person",
-    "@id": `${siteUrl}/#person`,
-    name: site.person.name,
-    url: siteUrl,
-    jobTitle: site.person.role,
-    worksFor: { "@type": "Organization", name: "Mantaq", url: site.mantaq.url },
-    sameAs: site.socials.map((social) => social.href),
-  };
+  const author = person;
 
   return (
     <>
@@ -92,14 +85,10 @@ export default async function BlogPost({ params }: Props) {
               publisher: author,
               isPartOf: { "@type": "Blog", "@id": `${siteUrl}/blog#blog`, url: `${siteUrl}/blog` },
             },
-            {
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "home", item: siteUrl },
-                { "@type": "ListItem", position: 2, name: "blog", item: `${siteUrl}/blog` },
-                { "@type": "ListItem", position: 3, name: post.title, item: url },
-              ],
-            },
+            breadcrumbs(
+              { name: "Blog", path: "/blog" },
+              { name: post.title, path: `/blog/${post.slug}` },
+            ),
           ],
         }}
       />

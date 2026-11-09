@@ -3,11 +3,12 @@ import Link from "next/link";
 
 import { JsonLd } from "@/components/JsonLd";
 import { formatDate, getPosts, type Post } from "@/lib/blog";
+import { breadcrumbs, personId } from "@/lib/seo";
 import { site, siteUrl } from "@/site.config";
 
 export const metadata: Metadata = {
-  title: "blog",
-  description: `notes from ${site.person.name.toLowerCase()} on building software, ai and the systems behind them.`,
+  title: "Blog",
+  description: `Notes from ${site.person.name}, ${site.person.role} at Mantaq, on building software, AI and the systems behind them.`,
   alternates: { canonical: "/blog" },
 };
 
@@ -28,19 +29,24 @@ export default async function Blog() {
     <div className="pb-16">
       <JsonLd
         data={{
-          "@type": "Blog",
-          "@id": `${siteUrl}/blog#blog`,
-          name: `${site.name} blog`,
-          url: `${siteUrl}/blog`,
-          author: { "@type": "Person", "@id": `${siteUrl}/#person`, name: site.person.name },
-          blogPost: posts
-            .filter((post) => !post.draft)
-            .map((post) => ({
-              "@type": "BlogPosting",
-              headline: post.title,
-              url: `${siteUrl}/blog/${post.slug}`,
-              datePublished: post.publishedAt,
-            })),
+          "@graph": [
+            {
+              "@type": "Blog",
+              "@id": `${siteUrl}/blog#blog`,
+              name: `Blog by ${site.person.name}`,
+              url: `${siteUrl}/blog`,
+              author: { "@id": personId },
+              blogPost: posts
+                .filter((post) => !post.draft)
+                .map((post) => ({
+                  "@type": "BlogPosting",
+                  headline: post.title,
+                  url: `${siteUrl}/blog/${post.slug}`,
+                  datePublished: post.publishedAt,
+                })),
+            },
+            breadcrumbs({ name: "Blog", path: "/blog" }),
+          ],
         }}
       />
       <section className="flex flex-col gap-4 pt-18 pb-10">
