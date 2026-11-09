@@ -38,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={mono.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
       </head>
       <body className="min-h-screen bg-bg text-fg">
         <noscript>

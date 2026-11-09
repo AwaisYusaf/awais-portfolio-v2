@@ -1,22 +1,23 @@
 import type { MetadataRoute } from "next";
 
-import { getEntries } from "@/lib/content";
+import { getPosts } from "@/lib/blog";
 import { siteUrl } from "@/site.config";
 
 export const dynamic = "force-static";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const today = new Date().toISOString().split("T")[0];
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const posts = (await getPosts()).filter((post) => !post.draft);
+  const lastChanged = (post: (typeof posts)[number]) => post.updatedAt ?? post.publishedAt;
 
-  const pages = ["", "/blog"].map((route) => ({
-    url: `${siteUrl}${route}`,
-    lastModified: today,
-  }));
-
-  const posts = getEntries("blog").map((entry) => ({
-    url: `${siteUrl}/blog/${entry.slug}`,
-    lastModified: entry.metadata.publishedAt,
-  }));
-
-  return [...pages, ...posts];
+  return [
+    { url: siteUrl },
+    {
+      url: `${siteUrl}/blog`,
+      lastModified: posts.map(lastChanged).sort().at(-1),
+    },
+    ...posts.map((post) => ({
+      url: `${siteUrl}/blog/${post.slug}`,
+      lastModified: lastChanged(post),
+    })),
+  ];
 }

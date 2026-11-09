@@ -1,33 +1,111 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
-import { Label } from "@/components/Section";
-import { Row } from "@/components/Row";
-import { formatDate, getEntries } from "@/lib/content";
-import { site } from "@/site.config";
+import { JsonLd } from "@/components/JsonLd";
+import { formatDate, getPosts, type Post } from "@/lib/blog";
+import { site, siteUrl } from "@/site.config";
 
 export const metadata: Metadata = {
   title: "blog",
-  description: `notes from ${site.person.name.toLowerCase()} on building software, ai and the web.`,
+  description: `notes from ${site.person.name.toLowerCase()} on building software, ai and the systems behind them.`,
   alternates: { canonical: "/blog" },
 };
 
-export default function Blog() {
-  const posts = getEntries("blog");
+function groupByYear(posts: Post[]) {
+  const years = new Map<string, Post[]>();
+  for (const post of posts) {
+    const year = post.publishedAt.slice(0, 4);
+    years.set(year, [...(years.get(year) ?? []), post]);
+  }
+  return [...years];
+}
+
+export default async function Blog() {
+  const posts = await getPosts();
+  const [latest, ...older] = posts;
 
   return (
-    <section className="pt-24 pb-16">
-      <Label>blog ({posts.length})</Label>
-      <p className="mb-8 text-muted">notes on building software, ai and the web.</p>
-      <div className="border-t border-line">
-        {posts.map((post) => (
-          <Row
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            name={post.metadata.title}
-            meta={formatDate(post.metadata.publishedAt)}
-          />
-        ))}
-      </div>
-    </section>
+    <div className="pb-16">
+      <JsonLd
+        data={{
+          "@type": "Blog",
+          "@id": `${siteUrl}/blog#blog`,
+          name: `${site.name} blog`,
+          url: `${siteUrl}/blog`,
+          author: { "@type": "Person", "@id": `${siteUrl}/#person`, name: site.person.name },
+          blogPost: posts
+            .filter((post) => !post.draft)
+            .map((post) => ({
+              "@type": "BlogPosting",
+              headline: post.title,
+              url: `${siteUrl}/blog/${post.slug}`,
+              datePublished: post.publishedAt,
+            })),
+        }}
+      />
+      <section className="flex flex-col gap-4 pt-18 pb-10">
+        <p className="text-[13px] text-muted">blog ({posts.length})</p>
+        <h1 className="text-[22px] leading-[1.4] font-medium tracking-[-0.02em]">
+          notes on building software, ai and the systems behind them.
+        </h1>
+        <p className="text-muted">
+          written by {site.person.name.toLowerCase()}, {site.person.role.toLowerCase()} at mantaq.
+        </p>
+        <a href="/rss.xml" className="self-start py-2.5 text-[13px] text-muted transition-colors hover:text-fg">
+          rss ↗
+        </a>
+      </section>
+
+      {!latest && <p className="text-muted">first post coming soon.</p>}
+
+      {latest && (
+        <Link
+          href={`/blog/${latest.slug}`}
+          className="group flex flex-col gap-2.5 rounded-2xl border border-line p-7 transition-colors hover:border-fg"
+        >
+          <span className="text-[13px] text-muted">
+            {latest.draft ? "draft" : "latest"} ·{" "}
+            <time dateTime={latest.publishedAt}>{formatDate(latest.publishedAt).toLowerCase()}</time> ·{" "}
+            {latest.readingTime} min read
+          </span>
+          <span className="text-[20px] leading-[1.4] font-medium tracking-[-0.02em]">
+            {latest.title}
+          </span>
+          {latest.summary && <span className="text-muted">{latest.summary}</span>}
+          <span className="pt-1.5">
+            read <span className="inline-block transition-transform group-hover:translate-x-0.5">→</span>
+          </span>
+        </Link>
+      )}
+
+      {groupByYear(older).map(([year, posts]) => (
+        <section key={year} className="pt-12">
+          <p className="mb-1 text-[13px] text-muted">{year}</p>
+          {posts.map((post) => (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              className="group flex flex-wrap items-baseline gap-x-5 gap-y-1 border-b border-line py-4.5"
+            >
+              <time dateTime={post.publishedAt} className="shrink-0 basis-18 text-[13px] text-muted">
+                {formatDate(post.publishedAt, { year: undefined }).toLowerCase()}
+              </time>
+              <span className="flex flex-[1_1_360px] flex-col gap-1">
+                <span className="font-medium">
+                  {post.draft && <span className="text-muted">[draft] </span>}
+                  {post.title}
+                </span>
+                {post.summary && (
+                  <span className="line-clamp-2 text-[14px] text-muted">{post.summary}</span>
+                )}
+              </span>
+              <span className="text-[13px] text-muted transition-colors group-hover:text-fg">
+                {post.readingTime} min
+              </span>
+            </Link>
+          ))}
+        </section>
+      ))}
+    </div>
   );
 }

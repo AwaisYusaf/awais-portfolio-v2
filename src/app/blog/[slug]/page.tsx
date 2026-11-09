@@ -3,62 +3,107 @@ import { notFound } from "next/navigation";
 
 import { Article } from "@/components/Article";
 import { JsonLd } from "@/components/JsonLd";
-import { formatDate, getEntries, getEntry } from "@/lib/content";
+import { getPost, getPostParams, getPosts } from "@/lib/blog";
 import { site, siteUrl } from "@/site.config";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// One static HTML page per post, written at build time. Slugs that weren't
+// built are a 404.
 export const dynamicParams = false;
 
-export function generateStaticParams() {
-  return getEntries("blog").map((entry) => ({ slug: entry.slug }));
+export async function generateStaticParams() {
+  return getPostParams();
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getEntry("blog", slug);
-  if (!post) return {};
+  const post = await getPost(slug);
+  if (!post) return { robots: { index: false } };
 
-  const { title, summary, publishedAt } = post.metadata;
+  const title = post.seoTitle ?? post.title;
+  const description = post.seoDescription ?? post.summary;
+  const url = `/blog/${post.slug}`;
+
   return {
-    title: title.toLowerCase(),
-    description: summary,
-    alternates: { canonical: `/blog/${slug}` },
+    title,
+    description,
+    keywords: post.tags,
+    authors: [{ name: site.person.name, url: siteUrl }],
+    alternates: { canonical: url },
+    // Drafts only exist in `npm run dev`, but never let one be indexed.
+    robots: post.draft ? { index: false, follow: false } : undefined,
     openGraph: {
       title,
-      description: summary,
+      description,
       type: "article",
-      publishedTime: publishedAt,
-      url: `/blog/${slug}`,
+      url,
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt ?? post.publishedAt,
+      authors: [siteUrl],
+      tags: post.tags,
     },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
 export default async function BlogPost({ params }: Props) {
   const { slug } = await params;
-  const post = getEntry("blog", slug);
-  if (!post) notFound();
+  const posts = await getPosts();
+  const index = posts.findIndex((post) => post.slug === slug);
+  if (index === -1) notFound();
 
-  const { metadata, content } = post;
+  const post = posts[index];
+  // The next older post, wrapping round to the newest.
+  const next = posts.length > 1 ? posts[(index + 1) % posts.length] : undefined;
+  const url = `${siteUrl}/blog/${post.slug}`;
+  const author = {
+    "@type": "Person",
+    "@id": `${siteUrl}/#person`,
+    name: site.person.name,
+    url: siteUrl,
+    jobTitle: site.person.role,
+    worksFor: { "@type": "Organization", name: "Mantaq", url: site.mantaq.url },
+    sameAs: site.socials.map((social) => social.href),
+  };
 
   return (
     <>
       <JsonLd
         data={{
-          "@type": "BlogPosting",
-          headline: metadata.title,
-          description: metadata.summary,
-          datePublished: metadata.publishedAt,
-          url: `${siteUrl}/blog/${slug}`,
-          author: { "@type": "Person", name: site.person.name, url: siteUrl },
+          "@graph": [
+            {
+              "@type": "BlogPosting",
+              "@id": `${url}#post`,
+              headline: post.title,
+              description: post.seoDescription ?? post.summary,
+              datePublished: post.publishedAt,
+              dateModified: post.updatedAt ?? post.publishedAt,
+              url,
+              mainEntityOfPage: url,
+              image: [
+                `${url}/opengraph-image`,
+                ...(post.cover ? [`${post.cover.url}?w=1200&fm=jpg&q=80`] : []),
+              ],
+              keywords: post.tags.join(", "),
+              wordCount: post.wordCount,
+              inLanguage: "en",
+              author,
+              publisher: author,
+              isPartOf: { "@type": "Blog", "@id": `${siteUrl}/blog#blog`, url: `${siteUrl}/blog` },
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "home", item: siteUrl },
+                { "@type": "ListItem", position: 2, name: "blog", item: `${siteUrl}/blog` },
+                { "@type": "ListItem", position: 3, name: post.title, item: url },
+              ],
+            },
+          ],
         }}
       />
-      <Article
-        back={{ href: "/blog", label: "blog" }}
-        title={metadata.title}
-        meta={formatDate(metadata.publishedAt)}
-        source={content}
-      />
+      <Article post={post} next={next} />
     </>
   );
 }

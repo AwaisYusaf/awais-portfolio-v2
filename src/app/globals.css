@@ -59,6 +59,29 @@ body {
   outline-offset: 2px;
 }
 
+/* Code blocks are highlighted at build time (shiki, in Code.tsx, with the
+   grayscale themes in src/lib/code-theme.ts); each token carries both
+   themes' styles as variables. */
+[data-code] code span {
+  color: var(--shiki-light);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+}
+
+:root[data-theme="dark"] [data-code] code span {
+  color: var(--shiki-dark);
+  font-style: var(--shiki-dark-font-style);
+  font-weight: var(--shiki-dark-font-weight);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-code] code span {
+    color: var(--shiki-dark);
+    font-style: var(--shiki-dark-font-style);
+    font-weight: var(--shiki-dark-font-weight);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
